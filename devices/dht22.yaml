@@ -1,0 +1,65 @@
+esphome:
+  name: test-sensor
+  platform: ESP32
+  board: nodemcu-32s
+
+wifi:
+  ssid: "badkitty"
+  password: "fuzzytreemonitor"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "test_fallback"
+    password: "test_fallback"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "my secure password"
+
+ota:
+  password: "my secure password"
+
+
+sensor:
+  - platform: dht
+    pin: 5
+    temperature:
+      id: temp
+      name: "DHT22 Temperature"
+      filters:
+        - lambda: return x * (9.0/5.0) + 32.0;
+      unit_of_measurement: "°F"
+    humidity:
+      id: humidity
+      name: "DHT22 Humidity"
+      filters:
+        exponential_moving_average:
+          alpha: 0.01
+          send_every: 1
+    update_interval: 1s
+    model: DHT22
+
+i2c:
+    sda: 26
+    scl: 27
+
+font:
+  # gfonts://family[@weight]
+  - file: "gfonts://Roboto"
+    id: myfont
+    size: 30
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3D
+    lambda: |-
+       it.printf(0, 34, id(myfont), "%.1f%%", id(humidity).state);
+       it.printf(0, 0, id(myfont), "%.1f°F", id(temp).state);
+#      it.print(0, 0, id(myfont), "Hello World!");
+
