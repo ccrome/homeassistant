@@ -1,0 +1,122 @@
+esphome:
+  name: hot-tub
+  platform: ESP32
+  board: esp32doit-devkit-v1
+
+wifi:
+  ssid: "badkitty"
+  password: "fuzzytreemonitor"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "hot-tub-fallback"
+    password: "fuzzytreemonitor"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: "fuzzytreemonitor"
+
+ota:
+  password: "fuzzytreemonitor"
+
+dallas:
+  - pin: 21
+    update_interval: 1s
+
+sensor:
+  - platform: dallas
+    index: 0
+    name: "Hot Tub Temperature"
+    id: hottubtemp
+  - platform: wifi_signal
+    name: "Hot Tub wifi signal"
+    update_interval: 1s
+    id: hottub_wifi
+    entity_category: "diagnostic"
+
+#i2c:
+#    sda: 22
+#    scl: 23
+
+#font:
+#  # gfonts://family[@weight]
+#  - file: "gfonts://Roboto"
+#    id: big
+#    size: 30
+#  - file: "gfonts://Roboto"
+#    id: medium
+#    size: 20
+#  - file: "gfonts://Roboto"
+#    id: small
+#    size: 10
+
+#display:
+#  - platform: ssd1306_i2c
+#    model: "SSD1306 128x64"
+#    address: 0x3D
+#    lambda: |-
+#       it.printf(0, 0, id(big), "%.1f°F", (id(hottubtemp).state*9/5)+32);
+#       it.printf(0, 35, id(medium), "WiFI: %.1f", id(hottub_wifi).state);
+
+
+switch:
+  - platform: gpio
+    name: "hot tub temp up"
+    pin: 22
+    id: gpio_temp_up
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_temp_up
+    
+  - platform: gpio
+    name: "hot tub temp down"
+    pin: 23
+    id: gpio_temp_down
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_temp_down
+  
+  - platform: gpio
+    name: "hot tub light up"
+    pin: 17
+    id: gpio_light_up
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_light_up
+  
+
+  - platform: gpio
+    name: "hot tub light down"
+    pin: 5
+    id: gpio_light_down
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_light_down
+  
+  - platform: gpio
+    name: "hot tub jets"
+    pin: 18
+    id: gpio_jets
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_jets
+  
+  - platform: gpio
+    name: "hot tub clean"
+    pin: 19
+    id: gpio_clean
+    restore_mode: ALWAYS_OFF
+    on_turn_on:
+      - delay: 500ms
+      - switch.turn_off: gpio_clean
+  
